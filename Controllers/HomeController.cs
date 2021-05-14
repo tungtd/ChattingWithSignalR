@@ -37,8 +37,11 @@ namespace ChattingWithSignalR.Controllers
         {
             return View();
         }
+        public ActionResult RecordingAudio()
+        {
+            return View();
+        }
 
-       
         [HttpPost]
         public ActionResult PostRecordedAudioVideo()
         {
