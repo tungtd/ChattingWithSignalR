@@ -17,6 +17,7 @@ window.onload = () => {
     let stream;
     let voiceStream;
     let desktopStream;
+    let INT_REC = 1500; // timeslice - The number of milliseconds to record into each Blob
 
     const mergeAudioStreams = (desktopStream, voiceStream) => {
         const context = new AudioContext();
@@ -68,7 +69,8 @@ window.onload = () => {
         blobs = [];
 
         rec = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp8,opus' });
-        rec.ondataavailable = (e) => blobs.push(e.data);
+        //rec.ondataavailable = (e) => blobs.push(e.data);
+        rec.ondataavailable = postBlob;
         rec.onstop = async () => {
 
             //blobs.push(MediaRecorder.requestData());
@@ -84,10 +86,52 @@ window.onload = () => {
         micAudioToggle.disabled = true;
     };
 
+    function postBlob(event) {
+        if (event.data && event.data.size > 0) {
+            blobs.push(event.data);
+            sendBlobAsBase64(event.data);
+        }
+    }
+    function sendBlobAsBase64(blob) {
+        const reader = new FileReader();
+
+        reader.addEventListener('load', () => {
+            const dataUrl = reader.result;
+            const base64EncodedData = dataUrl.split(',')[1];
+            console.log(base64EncodedData)
+            sendDataToBackend(base64EncodedData);
+        });
+
+        reader.readAsDataURL(blob);
+    };
+
+    function sendDataToBackend(base64EncodedData) {
+
+            $.ajax({
+                type: "POST",
+                url: '/Home/PostRecordedPart',
+                data: JSON.stringify({ 'jsonInput': JSON.stringify(base64EncodedData) }), 
+                cache: false,
+                processData: false,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    console.log("Hello: " + response.Name + ".\nCurrent Date and Time: " + response.DateTime);
+                },
+                failure: function (response) {
+                    console.log(response.responseText);
+                },
+                error: function (response) {
+                    console.log(response.responseText);
+                }
+            });
+
+    }; 
+
     startBtn.onclick = () => {
         startBtn.disabled = true;
         stopBtn.disabled = false;
-        rec.start();
+        rec.start(INT_REC);
     };
 
     stopBtn.onclick = () => {
