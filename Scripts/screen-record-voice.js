@@ -97,7 +97,7 @@ window.onload = () => {
 
         reader.addEventListener('load', () => {
             const dataUrl = reader.result;
-            const base64EncodedData = dataUrl.split(',')[1];
+            const base64EncodedData = dataUrl.includes('opus') ? dataUrl.split(',')[2] : dataUrl.split(',')[1];
             console.log(base64EncodedData)
             sendDataToBackend(base64EncodedData);
         });
@@ -115,8 +115,7 @@ window.onload = () => {
                 processData: false,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                success: function (response) {
-                    console.log("Hello: " + response.Name + ".\nCurrent Date and Time: " + response.DateTime);
+                success: function (response) {                   
                 },
                 failure: function (response) {
                     console.log(response.responseText);

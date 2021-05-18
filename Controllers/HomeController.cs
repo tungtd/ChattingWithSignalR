@@ -69,25 +69,25 @@ namespace ChattingWithSignalR.Controllers
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 var obj = serializer.Deserialize<string>(jsonInput);
                 var bytes = Convert.FromBase64String(obj);
-                //var path = AppDomain.CurrentDomain.BaseDirectory + "uploads/test.webm";
+                string path = "~//uploads//Recordings//test.webm";
 
                 //if (!Directory.Exists(System.Web.HttpContext.Current.Server.MapPath(path)))
                 //{
                 //    Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath(path));
                 //}
-                //using (var stream = new FileStream(System.Web.HttpContext.Current.Server.MapPath(path), FileMode.Append))
-                //{
-                //    try
-                //    {
-                //        await stream.WriteAsync(bytes, 0, bytes.Length).ConfigureAwait(false);
-                //    }
-                //    catch (Exception ex)
-                //    {
+                using (var stream = new FileStream(System.Web.HttpContext.Current.Server.MapPath(path), FileMode.Append))
+                {
+                    try
+                    {
+                        await stream.WriteAsync(bytes, 0, bytes.Length).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
 
 
-                //    }
+                    }
 
-                //}
+                }
             }
             catch (Exception ex)
             {
